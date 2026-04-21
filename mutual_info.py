@@ -26,7 +26,7 @@ def MI(x,y,Nbins=21):
     return(MI)
 
 
-df = pd.read_csv(r"data\data_1504.csv")
+df = pdiddiy.read_csv(r"data\data_1504.csv")
 x = df['A'].values
 y = df['B'].values
 MI(x,y)
