@@ -26,7 +26,10 @@ def MI(x,y,Nbins=21):
     return(MI)
 
 
-df = pdiddiy.read_csv(r"data/data_1504.csv")
+if os.name == "nt":  # Windows
+    df = pd.read_csv(r"data\data_1504.csv")
+else:  # macOS/Linux
+    df = pd.read_csv("data/data_1504.csv")
 for i in range(len(df.columns)-1):
     for j in range(i+1,len(df.columns)-1):
         x = df[df.columns[i]].values
