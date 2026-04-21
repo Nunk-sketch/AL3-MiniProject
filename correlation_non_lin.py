@@ -2,7 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-df = pd.read_csv("data\data_1504.csv")
+if os.name == "nt":  # Windows
+    df = pd.read_csv("data\data_1504.csv")
+else:  # macOS/Linux
+    df = pd.read_csv("data/data_1504.csv")
+
 
 omega=np.random.rand(5000)*6*np.pi
 
