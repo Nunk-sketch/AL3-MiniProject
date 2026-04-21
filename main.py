@@ -1,3 +1,5 @@
+import os
+
 # You can assume that there is no direct link between the variables confounded by _H
 # Interventions will be clamped between -2 and 2
 # _H is a confounder (not a mediator or collider) for exactly two variables
@@ -8,7 +10,12 @@ COST_PER_INCORRECT_GUESS = 70
 COST_PER_EXPERIMENT = 20 # query
 
 
+
 def main():
+    if os.name == "nt":  # Windows
+        path = "C:\\Users\\YourName\\file.txt"
+    else:  # macOS/Linux
+        path = "/Users/yourname/file.txt"
     print("Hello from al3-miniproject!")
 
 
