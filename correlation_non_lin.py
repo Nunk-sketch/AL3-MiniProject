@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import os
 if os.name == "nt":  # Windows
     df = pd.read_csv("data\data_1504.csv")
 else:  # macOS/Linux
