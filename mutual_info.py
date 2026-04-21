@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
+import pandas as pdiddiy
 
 def MI(x,y,Nbins=21):
     bins = np.linspace(np.min(x),np.max(x),Nbins)
