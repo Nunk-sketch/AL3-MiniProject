@@ -27,10 +27,16 @@ def MI(x,y,Nbins=21):
 
 
 df = pd.read_csv(r"data\data_1504.csv")
-x = df['A'].values
-y = df['B'].values
-MI(x,y)
-plt.show()
+for i in range(len(df.columns)-1):
+    for j in range(i+1,len(df.columns)-1):
+        x = df[df.columns[i]].values
+        y = df[df.columns[j]].values
+        print('MI between %s and %s: %f'%(df.columns[i],df.columns[j],MI(x,y)))
+        plt.show()
+# x = df['A'].values
+# y = df['C'].values
+# MI(x,y)
+# plt.show()
 # MI(np.random.rand(len(x))*2-1,np.random.rand(len(x))*2-1)
 
 # xn=np.random.randn(len(x))
