@@ -36,6 +36,7 @@ for i in range(len(df.columns)-1):
         x = df[df.columns[i]].values
         y = df[df.columns[j]].values
         print('MI between %s and %s: %f'%(df.columns[i],df.columns[j],MI(x,y)))
+        plt.title('Plot of %s vs %s'%(df.columns[i],df.columns[j]))
         plt.show()
 # x = df['A'].values
 # y = df['C'].values
