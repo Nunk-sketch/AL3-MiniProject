@@ -177,7 +177,7 @@ def plot_mutual_information(dataframe, method="kde"):
 
 
 if __name__ == "__main__":
-    df = load_csv_data("data_1504.csv")
+    df = load_csv_data("data_2358.csv")
 
     # Swap method= to compare estimators:
     plot_mutual_information(df, method="kde")
