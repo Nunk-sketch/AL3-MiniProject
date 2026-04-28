@@ -4,19 +4,30 @@ from scipy.stats import gaussian_kde
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from scipy.stats import gaussian_kde
 
-def get_csv_file_list():
-    data_dir = Path(__file__).resolve().parent / "data"
+def get_csv_file_list(): #returns a list of all csv files in the data directory
+    data_dir = "./data"
     print(data_dir)
-    return [str(path) for path in data_dir.glob("*.csv")]
+    return [str(path) for path in Path(data_dir).glob("*.csv")]
 
-def get_csv_file(csv_file_name):
-    data_dir = Path(__file__).resolve().parent / "data"
-    print(data_dir)
-    return Path.joinpath(data_dir, csv_file_name)
+def get_csv_file(csv_file_name): #takes a csv file name and returns the full path to the file if it exists in the data directory, otherwise returns None
+    tempList = get_csv_file_list()
+    for file in tempList:
+        if csv_file_name in file:
+            return file
+    return None
 
-def load_csv_data(csv_file_path):
-    return pd.read_csv(csv_file_path)
+def load_csv_data(csv_file_name): #takes a csv file name and returns a pandas dataframe
+    csv_file_path = get_csv_file(csv_file_name)
+    if csv_file_path:
+        return pd.read_csv(csv_file_path)
+    else:
+        return None
+
+def get_columns(dataframe):
+    return dataframe.columns.tolist()
     
 def kde_MI(x, y, grid_points=30):
     # Ensure inputs are numpy arrays
@@ -47,8 +58,66 @@ def kde_MI(x, y, grid_points=30):
 def get_mutual_information():
     pass
 
-def plot_mutual_information():
-    pass
+def plot_mutual_information(dataframe):
+    df = dataframe.iloc[:, 1:]  # Ignore the first column
+    cols = get_columns(df)
+    n = len(cols)
+
+    fig, axes = plt.subplots(n, n, figsize=(3.5 * n, 3.5 * n))
+    axes = np.atleast_2d(axes)
+
+    for i in range(n):
+        for j in range(n):
+            ax = axes[i, j]
+
+            x = pd.to_numeric(df[cols[j]], errors="coerce").dropna().to_numpy()
+            y = pd.to_numeric(df[cols[i]], errors="coerce").dropna().to_numpy()
+
+            if len(x) == 0 or len(y) == 0 or np.std(x) == 0 or np.std(y) == 0:
+                ax.axis("off")
+                continue
+
+            divider = make_axes_locatable(ax)
+            ax_top = divider.append_axes("top", size="22%", pad=0.05, sharex=ax)
+            ax_right = divider.append_axes("right", size="22%", pad=0.05, sharey=ax)
+
+            if i == j:
+                # Linear plot for the same column
+                ax.plot(x, x, color="steelblue", linewidth=1.2)
+            else:
+                # Compute mutual information and create KDE contour plot
+                mi = kde_MI(x, y)
+                
+                # Create KDE contour plot
+                xx, yy = np.mgrid[x.min():x.max():100j, y.min():y.max():100j]
+                positions = np.vstack([xx.ravel(), yy.ravel()])
+                kernel = gaussian_kde(np.vstack([x, y]))
+                f = np.reshape(kernel(positions).T, xx.shape)
+                ax.contour(xx, yy, f, colors="steelblue", linewidths=1.2, alpha=0.8)
+                
+                ax.text(0.05, 0.95, f'MI: {mi:.3f}', transform=ax.transAxes, 
+                        fontsize=8, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+            # Plot marginal distributions as density lines
+            x_kde = gaussian_kde(x)
+            y_kde = gaussian_kde(y)
+            
+            x_range = np.linspace(x.min(), x.max(), 100)
+            y_range = np.linspace(y.min(), y.max(), 100)
+            
+            ax_top.plot(x_range, x_kde(x_range), color="steelblue", linewidth=1.5)
+            ax_right.plot(y_kde(y_range), y_range, color="steelblue", linewidth=1.5)
+
+            ax_top.axis("off")
+            ax_right.axis("off")
+
+            ax.set_xlabel(cols[j], fontsize=8)
+            ax.set_ylabel(cols[i], fontsize=8)
+            ax.tick_params(labelsize=6)
+
+    plt.tight_layout()
+    plt.show()
+    
 
 if __name__ == "__main__":
     #first get a list of all csv files in the data directory
@@ -58,21 +127,4 @@ if __name__ == "__main__":
     #do that for all csv files in the data directory
     
     #Compare each csv result with eachother to see if there are any patterns or differences in the mutual information values across different datasets
-    
-    path = "./data/-2a.csv"
-    df = load_csv_data(path)
-
-    b = df["B"].to_numpy()
-    b_x = np.linspace(min(b), max(b), len(b))
-    print(b, b.shape)
-    c = df["C"].to_numpy()
-    c_x = np.linspace(min(c), max(c), len(c))
-    print(c, c.shape)
-    omega=np.random.rand(100)*6*np.pi
-    #print(kde_MI(a, b))
-    
-    
-    print('Correlation between b and c: %.2f'%np.corrcoef(b,c)[0,1]);
-    
-    sns.jointplot(x=b,y=c,kind='kde');
-    plt.show()
+    plot_mutual_information(load_csv_data("data_1504.csv"))
