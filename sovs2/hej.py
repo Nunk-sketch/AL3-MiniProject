@@ -5,6 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from scipy.stats import ttest_ind
+from scipy.stats import ks_2samp
+from scipy.stats import levene
 
 def get_csv_file_list():
     data_dir = "./data"
@@ -28,7 +31,7 @@ def get_columns(dataframe):
     return dataframe.columns.tolist()
 
 
-# ── MI Estimators ──────────────────────────────────────────────────────────────
+# MI Estimators
 
 def kde_MI(x, y, grid_points=30):
     x, y = np.asarray(x), np.asarray(y)
@@ -89,7 +92,7 @@ def histogram_MI(x, y, n_bins=21):
     return np.sum(xy_joint[mask] * np.log(xy_joint[mask] / p_x_p_y[mask]))
 
 
-# ── Method registry ────────────────────────────────────────────────────────────
+# method registry
 
 MI_METHODS = {
     "kde":      kde_MI,
@@ -98,7 +101,7 @@ MI_METHODS = {
 }
 
 
-# ── Plotting ───────────────────────────────────────────────────────────────────
+# plotting
 
 def plot_mutual_information(dataframe, method="kde"):
     """
@@ -175,6 +178,74 @@ def plot_mutual_information(dataframe, method="kde"):
     plt.tight_layout()
     plt.show()
 
+def get_percentiles(dataframe, column_name):
+    # get the 25th, and 75th percentiles for a specified column in the DataFrame
+    if column_name not in dataframe.columns:
+        raise ValueError(f"Column '{column_name}' not found in DataFrame.")
+    return dataframe[column_name].quantile([0.25, 0.75]).to_dict()
+
+def get_conditional_dataframe(dataframe, column_name, lower_percentile=None, upper_percentile=None):
+    # filter the DataFrame to include only rows where the specified column's value is above or below the given percentile
+    if lower_percentile is not None and upper_percentile is not None:
+        raise ValueError("Only one of lower_percentile or upper_percentile should be provided.")
+    if column_name not in dataframe.columns:
+        raise ValueError(f"Column '{column_name}' not found in DataFrame.")
+    if lower_percentile is not None:
+        threshold = dataframe[column_name].quantile(lower_percentile)
+        return dataframe[dataframe[column_name] < threshold]
+    if upper_percentile is not None:
+        threshold = dataframe[column_name].quantile(upper_percentile)
+        return dataframe[dataframe[column_name] > threshold]
+    
+def mean_test(dataframe_1, dataframe_2, column_name):
+    # perform a simple mean comparison test (e.g., t-test) between two DataFrames for a specified column
+    
+
+    common_columns = set(dataframe_1.columns).intersection(set(dataframe_2.columns))
+    if not common_columns:
+        raise ValueError("No common columns found between the two DataFrames.")
+    
+    results = {}
+    for column in common_columns:
+        if pd.api.types.is_numeric_dtype(dataframe_1[column]) and pd.api.types.is_numeric_dtype(dataframe_2[column]):
+            stat, p_value = ttest_ind(dataframe_1[column].dropna(), dataframe_2[column].dropna())
+            results[column] = {"t_statistic": stat, "p_value": p_value}
+    
+    return results
+
+def variance_test(dataframe_1, dataframe_2, column_name):
+    # perform a simple variance comparison test (e.g., Levene's test) between two DataFrames for a specified column
+    
+
+    common_columns = set(dataframe_1.columns).intersection(set(dataframe_2.columns))
+    if not common_columns:
+        raise ValueError("No common columns found between the two DataFrames.")
+    
+    results = {}
+    for column in common_columns:
+        if pd.api.types.is_numeric_dtype(dataframe_1[column]) and pd.api.types.is_numeric_dtype(dataframe_2[column]):
+            stat, p_value = levene(dataframe_1[column].dropna(), dataframe_2[column].dropna())
+            results[column] = {"levene_statistic": stat, "p_value": p_value}
+    
+    return results
+
+def KS_test(dataframe_1, dataframe_2, column_name):
+    # perform a Kolmogorov-Smirnov test between two DataFrames for a specified column
+    
+
+    common_columns = set(dataframe_1.columns).intersection(set(dataframe_2.columns))
+    if not common_columns:
+        raise ValueError("No common columns found between the two DataFrames.")
+    
+    results = {}
+    for column in common_columns:
+        if pd.api.types.is_numeric_dtype(dataframe_1[column]) and pd.api.types.is_numeric_dtype(dataframe_2[column]):
+            stat, p_value = ks_2samp(dataframe_1[column].dropna(), dataframe_2[column].dropna())
+            results[column] = {"ks_statistic": stat, "p_value": p_value}
+    
+    return results
+
+def 
 
 if __name__ == "__main__":
     df = load_csv_data("data_2358.csv")
