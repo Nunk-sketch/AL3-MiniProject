@@ -1056,21 +1056,23 @@ if __name__ == "__main__":
     df = load_csv_data("data_2358.csv")
 
     if df is not None:
+        if 'Unnamed: 0' in df.columns:
+            df = df.drop(columns=['Unnamed: 0'])
         # --- Step 0: quick look ---
         print(df.head())
         print(df.describe())
 
         # --- Step 1: visual exploration ---
-        plot_mutual_information(df, method="kde")
+        #plot_mutual_information(df, method="kde")
 
         # --- Step 2: full causal discovery pipeline ---
         results = infer_dag(
             df,
-            mi_threshold  = 0.1,   # raise if too many edges remain
-            alpha         = 0.1,
+            mi_threshold  = 0.045,
+            alpha         = 0.05,
             method        = "kde",
-            cmi_threshold = 0.2,
-            intervention_dirs = ("./data", "./testdata"),
+            cmi_threshold = 0.02,
+            intervention_dirs = ("./data",),
             verbose       = True,
         )
 
