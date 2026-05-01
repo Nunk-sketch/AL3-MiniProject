@@ -95,6 +95,14 @@ if __name__ == "__main__":
     corr = obs_df.corr()
     
     avg_effects = compute_effects(obs_means, interventions)
+    
+    matrix = pd.DataFrame(avg_effects).transpose()
+    matrix = matrix.sort_index().reindex(sorted(matrix.columns), axis=1)
+    
+    print("Average Absolute Effect Matrix:")
+    print(matrix.round(3))
+    print("----------------------------------------")
+    
     edges = detect_edges(avg_effects)
     
     all_vars = set(obs_df.columns)
@@ -107,9 +115,9 @@ if __name__ == "__main__":
     for e in sorted(edges):
         print(f"{e[0]} -> {e[1]}")
 
-    print("Candidate C Node:")
+    print("\nCandidate C Node:")
     print(f"C = {list(C_candidates)}")
 
-    print("Confounded Pairs (_H):")
+    print("\nConfounded Pairs (_H):")
     for p in conf_pairs:
         print(f"{p[0]} <- _H -> {p[1]}")
