@@ -61,7 +61,8 @@ def detect_edges(effects, threshold=THRESHOLD):
     
     for source in sources:
         for target, val in effects[source].items():
-            if source == target: continue
+            if source == target:
+                continue
             
             forward_effect = val
             backward_effect = effects.get(target, pd.Series({source: 0})).get(source, 0)
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     
     conf_pairs = find_confounder_pair(corr, edges)
 
-    print("Refined Causal Edges:")
+    print("Causal Edges:")
     for e in sorted(edges):
         print(f"{e[0]} -> {e[1]}")
 
