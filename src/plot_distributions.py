@@ -11,6 +11,9 @@ intervention_groups = {}
 baselines = {}
 
 for f in csv_files:
+    if f == '0ec.csv':
+        continue
+
     df = pd.read_csv(os.path.join(data_dir, f)).iloc[:, 1:].select_dtypes(include=['number'])
     
     match = re.search(r'([a-zA-Z])\.csv$', f)
