@@ -5,6 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "causal-learn>=0.1.4.5",
+    "dcor>=0.7",
     "ipykernel>=7.2.0",
     "ipython>=9.13.0",
     "matplotlib>=3.10.8",
@@ -15,4 +17,5 @@ dependencies = [
     "scikit-learn>=1.8.0",
     "scipy>=1.17.1",
     "seaborn>=0.13.2",
+    "torch>=2.11.0",
 ]
