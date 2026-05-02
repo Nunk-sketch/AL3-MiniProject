@@ -1068,9 +1068,9 @@ if __name__ == "__main__":
         # --- Step 2: full causal discovery pipeline ---
         results = infer_dag(
             df,
-            mi_threshold  = 0.045,
+            mi_threshold  = 0.04,
             alpha         = 0.05,
-            method        = "kde",
+            method        = "histogram",
             cmi_threshold = 0.02,
             intervention_dirs = ("./data",),
             verbose       = True,
@@ -1080,3 +1080,4 @@ if __name__ == "__main__":
         # int_df = load_csv_data("intervention_A1.csv")
         # if int_df is not None:
         #     print(intervention_effect_all_columns(df, int_df))
+        [('B','A'), ('B','E'), ('E','D'), ('C','F'), ('D','A'), ('E','F'), ('_H','D'), ('_H','F')]
