@@ -104,14 +104,6 @@ MI_METHODS = {
 # plotting
 
 def plot_mutual_information(dataframe, method="kde"):
-    """
-    Plot pairwise MI matrix with KDE contours.
-
-    Parameters
-    ----------
-    dataframe : pd.DataFrame
-    method    : str — one of "kde", "binned", "histogram"
-    """
     if method not in MI_METHODS:
         raise ValueError(f"Unknown method '{method}'. Choose from: {list(MI_METHODS)}")
 
@@ -245,7 +237,6 @@ def KS_test(dataframe_1, dataframe_2, column_name):
     
     return results
 
-def 
 
 if __name__ == "__main__":
     df = load_csv_data("data_2358.csv")
